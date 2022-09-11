@@ -28,6 +28,7 @@
 #define TIOCSRS485            0x542F
 #define SER_RS485_USE_GPIO    (1 << 5)
 #define GPIO_PIN              77
+#define FLAG_MASK             0b11111
 
 /************************************
  * GLOBAL VARIABLES
@@ -161,7 +162,7 @@ int setup_rs485(void){
         exit(4);
     }
 
-    if ( (rs485conf.flags != rs485test.flags) ||           /* check the flags */
+    if ( ((rs485conf.flags && FLAG_MASK) != (rs485test.flags && FLAG_MASK)) ||           /* check the flags */
          (rs485conf.padding[0] != rs485test.padding[0])    /* check the gpio port */
        ) {
         printf("Ioctl parameters not configured correctly.\n");

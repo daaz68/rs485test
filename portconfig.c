@@ -74,7 +74,7 @@ int main(void){
     fd = open (devc, O_RDWR);
     if (fd < 0) {
         /* Error handling. See errno. */
-        printf("Error opening %s.\n",devc);
+        fprintf(stderr,"ERR: Error opening %s.\n",devc);
         exit(1);
     }
     printf("   port %s successfully opened.\n",devc);
@@ -95,7 +95,7 @@ int main(void){
     /* Close the device when finished: */
     if (close (fd) < 0) {
         /* Error handling. See errno. */
-        printf("Error closing file descriptor.\n");
+        fprintf(stderr,"ERR: Error closing file descriptor.\n");
         exit(3);
     }
     exit(0);
@@ -149,7 +149,7 @@ int setup_rs485(void){
     /* set up serial parameters */
     if (ioctl (fd, TIOCSRS485, &rs485conf) < 0) {
         /* Error handling. See errno. */
-        printf("Error calling ioctl write configuration.\n");
+        fprintf(stderr,"ERR: Error calling ioctl write configuration.\n");
         exit(3);
     }
 
@@ -158,14 +158,14 @@ int setup_rs485(void){
 
     if (ioctl (fd, TIOCGRS485, &rs485test) < 0) {
         /* Error handling. See errno. */
-        printf("Error calling ioctl.\n");
+        fprintf(stderr,"ERR: Error calling ioctl.\n");
         exit(4);
     }
 
     if ( ((rs485conf.flags && FLAG_MASK) != (rs485test.flags && FLAG_MASK)) ||           /* check the flags */
          (rs485conf.padding[0] != rs485test.padding[0])    /* check the gpio port */
        ) {
-        printf("Ioctl parameters not configured correctly.\n");
+        fprintf(stderr,"ERR: Ioctl parameters not configured correctly.\n");
         exit(7);
     }
 
@@ -183,7 +183,7 @@ int setup_tty(void){
      * Read in existing settings, and handle any error
      */
     if(tcgetattr(fd, &tty) != 0) {
-        printf("Error %i from tcgetattr: %s\n", errno, strerror(errno));
+        fprintf(stderr,"ERR: Error %i from tcgetattr: %s\n", errno, strerror(errno));
         exit(5);
     }
 
@@ -218,7 +218,7 @@ int setup_tty(void){
      * Save tty settings, also checking for error
      */
     if (tcsetattr(fd, TCSANOW, &tty) != 0) {
-        printf("Error %i from tcsetattr: %s\n", errno, strerror(errno));
+        fprintf(stderr,"ERR: Error %i from tcsetattr: %s\n", errno, strerror(errno));
         exit(6);
     }
 

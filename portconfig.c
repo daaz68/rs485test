@@ -27,6 +27,7 @@
 #define TIOCGRS485            0x542E /* Driver-specific ioctls: */
 #define TIOCSRS485            0x542F
 #define SER_RS485_USE_GPIO    (1 << 5)
+#define GPIO_PIN              77
 
 /************************************
  * GLOBAL VARIABLES
@@ -127,7 +128,7 @@ int setup_rs485(void){
     memset(&rs485conf,0x00,sizeof(struct serial_rs485));
 
     /* Set GPIO pin to 77 in padding array */
-    rs485conf.padding[0]=77;
+    rs485conf.padding[0]=GPIO_PIN;
 
     /* Enable RS485 mode: */
     rs485conf.flags |= SER_RS485_ENABLED | SER_RS485_USE_GPIO;
@@ -158,6 +159,13 @@ int setup_rs485(void){
         /* Error handling. See errno. */
         printf("Error calling ioctl.\n");
         exit(4);
+    }
+
+    if ( (rs485conf.flags != rs485test.flags) ||           /* check the flags */
+         (rs485conf.padding[0] != rs485test.padding[0])    /* check the gpio port */
+       ) {
+        printf("Ioctl parameters not configured correctly.\n");
+        exit(7);
     }
 
     return 0;
